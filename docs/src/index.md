@@ -25,3 +25,10 @@ scheduling problems and dynamic simulations for power systems. The Sienna ecosys
 
 Each application uses multiple packages in the [`Julia`](http://www.julialang.org)
 programming language.
+
+## Installation and Quick Links
+
+  - [Sienna installation page](https://nrel-sienna.github.io/Sienna/SiennaDocs/docs/build/how-to/install/):
+    Instructions to install `SiennaTemplate.jl` and other Sienna packages
+  - [Sienna Documentation Hub](https://nrel-sienna.github.io/Sienna/SiennaDocs/docs/build/index.html):
+    Links to other Sienna packages' documentation
