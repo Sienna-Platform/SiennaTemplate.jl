@@ -25,6 +25,30 @@ function _is_reexported(obj, mod)
     return pm !== mod && pm !== Base && pm !== Core
 end
 
+"""Count how many methods of `func` have their own docstring via Docs.meta."""
+function _count_documented_methods(func)
+    defining_mods = Set{Module}()
+    for m in methods(func)
+        push!(defining_mods, m.module)
+    end
+    push!(defining_mods, parentmodule(func))
+
+    n_documented = 0
+    for mod in defining_mods
+        local meta
+        try
+            meta = Base.Docs.meta(mod)
+        catch
+            continue
+        end
+        binding = Base.Docs.Binding(mod, nameof(func))
+        if haskey(meta, binding)
+            n_documented += length(meta[binding].docs)
+        end
+    end
+    return n_documented
+end
+
 function check_all_names(mod, modname; include_private=false)
     missing_types = Vector{String}()
     missing_funcs = Vector{String}()
@@ -70,20 +94,7 @@ function check_all_names(mod, modname; include_private=false)
             if obj isa Function
                 total_methods = length(methods(obj))
                 if total_methods > 1
-                    n_documented = 0
-                    for m in methods(obj)
-                        mdoc = try
-                            Base.Docs.doc(m)
-                        catch
-                            nothing
-                        end
-                        if mdoc !== nothing
-                            mdocstr = string(mdoc)
-                            if !startswith(mdocstr, "No documentation found")
-                                n_documented += 1
-                            end
-                        end
-                    end
+                    n_documented = _count_documented_methods(obj)
                     if n_documented < total_methods && n_documented > 0
                         push!(partial_funcs, (string(n), n_documented, total_methods))
                     end
