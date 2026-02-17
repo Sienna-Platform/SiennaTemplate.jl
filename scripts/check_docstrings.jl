@@ -25,28 +25,46 @@ function _is_reexported(obj, mod)
     return pm !== mod && pm !== Base && pm !== Core
 end
 
-"""Count how many methods of `func` have their own docstring via Docs.meta."""
-function _count_documented_methods(func)
-    defining_mods = Set{Module}()
-    for m in methods(func)
-        push!(defining_mods, m.module)
-    end
-    push!(defining_mods, parentmodule(func))
+"""
+Check per-module documentation coverage for `func`.
 
-    n_documented = 0
-    for mod in defining_mods
-        local meta
+Returns a list of (module_name, n_methods) for modules that define methods
+of `func` but have zero docstring entries for it.
+"""
+function _find_undocumented_method_modules(func)
+    # Count methods per defining module
+    mod_method_counts = Dict{Module, Int}()
+    for m in methods(func)
+        mod_method_counts[m.module] = get(mod_method_counts, m.module, 0) + 1
+    end
+
+    undocumented = Vector{Tuple{String, Int}}()  # (module_name, n_methods)
+    # The function might be owned by a different module (e.g., IS.serialize
+    # extended in PowerSystems). Check bindings for both the method's module
+    # and the function's owning module.
+    owner_mod = parentmodule(func)
+    fname = nameof(func)
+
+    for (mod, n_methods) in mod_method_counts
+        # Skip synthetic modules created by @scoped_enum
+        endswith(string(nameof(mod)), "Module") && continue
+        has_docs = false
         try
             meta = Base.Docs.meta(mod)
+            for bind_mod in Set([mod, owner_mod])
+                binding = Base.Docs.Binding(bind_mod, fname)
+                if haskey(meta, binding) && !isempty(meta[binding].docs)
+                    has_docs = true
+                    break
+                end
+            end
         catch
-            continue
         end
-        binding = Base.Docs.Binding(mod, nameof(func))
-        if haskey(meta, binding)
-            n_documented += length(meta[binding].docs)
+        if !has_docs
+            push!(undocumented, (string(mod), n_methods))
         end
     end
-    return n_documented
+    return undocumented
 end
 
 function check_all_names(mod, modname; include_private=false)
@@ -54,7 +72,9 @@ function check_all_names(mod, modname; include_private=false)
     missing_funcs = Vector{String}()
     reexport_missing_types = Vector{Tuple{String, String}}()   # (name, source_module)
     reexport_missing_funcs = Vector{Tuple{String, String}}()
-    partial_funcs = Vector{Tuple{String, Int, Int}}()  # (name, documented, total)
+    # (func_name, [(module_name, n_methods), ...])
+    partial_funcs = Vector{Tuple{String, Vector{Tuple{String, Int}}}}()
+    skipped_accessors = 0
     ndoc = 0
     for n in names(mod; all=include_private)
         n == Symbol(modname) && continue
@@ -90,13 +110,18 @@ function check_all_names(mod, modname; include_private=false)
             if obj isa Type || obj isa UnionAll || obj isa Function
                 ndoc += 1
             end
-            # Check for partially documented functions (some methods lack docstrings)
+            # Check for partially documented functions: find modules that
+            # define methods but have zero doc entries for this function.
             if obj isa Function
-                total_methods = length(methods(obj))
-                if total_methods > 1
-                    n_documented = _count_documented_methods(obj)
-                    if n_documented < total_methods && n_documented > 0
-                        push!(partial_funcs, (string(n), n_documented, total_methods))
+                undoc_mods = _find_undocumented_method_modules(obj)
+                if !isempty(undoc_mods)
+                    sn = string(n)
+                    total_methods = length(methods(obj))
+                    is_accessor = startswith(sn, "get_") || startswith(sn, "set_")
+                    if is_accessor && total_methods > 10
+                        skipped_accessors += 1
+                    else
+                        push!(partial_funcs, (sn, undoc_mods))
                     end
                 end
             end
@@ -108,6 +133,7 @@ function check_all_names(mod, modname; include_private=false)
         reexport_missing_types,
         reexport_missing_funcs,
         partial_funcs,
+        skipped_accessors,
         ndoc,
     )
 end
@@ -161,13 +187,17 @@ function report(mod, modname; include_private=false)
     if !isempty(r.partial_funcs)
         println("Partially documented functions ($(length(r.partial_funcs))):")
         sorted = sort(r.partial_funcs; by=first)
-        for (name, ndoc, ntotal) in Iterators.take(sorted, 12)
-            println("  $name: $ndoc/$ntotal methods documented")
+        for (name, undoc_mods) in Iterators.take(sorted, 12)
+            mod_strs = join(["$m ($n methods)" for (m, n) in undoc_mods], ", ")
+            println("  $name — undocumented in: $mod_strs")
         end
         remaining = length(sorted) - 12
         if remaining > 0
             println("  ... and $remaining more")
         end
+    end
+    if r.skipped_accessors > 0
+        println("Uniform accessors (get_*/set_*!) skipped: $(r.skipped_accessors)")
     end
     println()
 end
