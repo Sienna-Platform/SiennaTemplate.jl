@@ -55,6 +55,31 @@ end
 # Literate post-processing functions for tutorial generation
 #########################################################
 
+# Compute base URL for the docs site based on Documenter's deploy context.
+# This ensures that links generated in notebooks point to the correct
+# location for stable, dev, and preview builds.
+function _compute_docs_base_url()
+    base = "https://nrel-sienna.github.io/SiennaTemplate.jl"
+
+    current_version = get(ENV, "DOCUMENTER_CURRENT_VERSION", "")
+
+    # Preview builds (e.g. "previews/PR123")
+    if startswith(current_version, "previews/PR")
+        return "$base/$current_version"
+    end
+
+    # Dev builds
+    if current_version == "dev"
+        dev_suffix = get(ENV, "DOCUMENTER_DEVURL", "dev")
+        return "$base/$dev_suffix"
+    end
+
+    # Default to stable (also covers tagged versions where content is shared)
+    return "$base/stable"
+end
+
+const _DOCS_BASE_URL = _compute_docs_base_url()
+
 # postprocess function to insert md
 function insert_md(content)
     m = match(r"APPEND_MARKDOWN\(\"(.*)\"\)", content)
@@ -242,7 +267,6 @@ end
 
 # Add italicized "view online" comment after each image from ```@raw html ... ``` (or
 # the raw HTML / markdown form Literate writes). Used as a postprocess in Literate.notebook.
-# Expects _DOCS_BASE_URL to be defined by the includer (e.g. in make.jl).
 # Literate strips the backtick wrapper and outputs raw HTML; we match that multi-line block.
 function add_image_links(nb::Dict, outputfile_base::AbstractString)
     tutorial_url = "$_DOCS_BASE_URL/tutorials/$(outputfile_base)/"
