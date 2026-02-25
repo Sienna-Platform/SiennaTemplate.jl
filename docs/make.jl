@@ -2,7 +2,7 @@ using Documenter
 import DataStructures: OrderedDict
 using SiennaTemplate
 using DocumenterInterLinks
-using Literate
+
 
 # UPDATE FOR CURRENT MODULE NAME HERE
 const _DOCS_BASE_URL = "https://nrel-sienna.github.io/SiennaTemplate.jl/stable"
