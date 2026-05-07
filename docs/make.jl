@@ -5,7 +5,7 @@ using DocumenterInterLinks
 
 
 links = InterLinks(
-    # "InfrastructureSystems" => "https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/"
+    # "InfrastructureSystems" => "https://sienna-platform.github.io/InfrastructureSystems.jl/stable/"
 )
 
 # Explicitly defined fallbacks for external docstrings that fail to resolve

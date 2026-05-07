@@ -11,9 +11,9 @@ CurrentModule = SiennaTemplate
 ## About Sienna
 
 `SiennaTemplate` is part of the National Laboratory of the Rockies (formerly known as NREL)'s
-[Sienna ecosystem](https://www.nlr.gov/analysis/sienna.html), an open source framework for
+[Sienna ecosystem](https://sienna-platform.github.io/Sienna/), an open source framework for
 scheduling problems and dynamic simulations for power systems. The Sienna ecosystem can be
-[found on github](https://github.com/Sienna-Platform/Sienna). It contains three applications:
+[found on github](https://github.com/Sienna-Platform). It contains three applications:
 
   - [Sienna\Data](https://sienna-platform.github.io/Sienna/pages/applications/sienna_data.html) enables
     efficient data input, analysis, and transformation
@@ -28,7 +28,7 @@ programming language.
 
 ## Installation and Quick Links
 
-  - [Sienna installation page](https://nrel-sienna.github.io/Sienna/SiennaDocs/docs/build/how-to/install/):
+  - [Sienna installation page](https://sienna-platform.github.io/Sienna/SiennaDocs/docs/build/how-to/install/):
     Instructions to install `SiennaTemplate.jl` and other Sienna packages
-  - [Sienna Documentation Hub](https://nrel-sienna.github.io/Sienna/SiennaDocs/docs/build/index.html):
+  - [Sienna Documentation Hub](https://sienna-platform.github.io/Sienna/SiennaDocs/docs/build/index.html):
     Links to other Sienna packages' documentation
