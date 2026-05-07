@@ -34,7 +34,7 @@ makedocs(
     format = Documenter.HTML(
         prettyurls = haskey(ENV, "GITHUB_ACTIONS"),
         size_threshold = nothing,),
-    sitename = "github.com/NREL-Sienna/SiennaTemplate.jl",
+    sitename = "github.com/Sienna-Platform/SiennaTemplate.jl",
     authors = "Freddy Mercury",
     pages = Any[p for p in pages],
     draft = false,
@@ -42,7 +42,7 @@ makedocs(
 )
 
 deploydocs(
-    repo="github.com/NREL-Sienna/SiennaTemplate.jl",
+    repo="github.com/Sienna-Platform/SiennaTemplate.jl",
     target="build",
     branch="gh-pages",
     devbranch="main",
