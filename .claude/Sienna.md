@@ -77,7 +77,10 @@ Key rules:
 
 Framework: [Diataxis](https://diataxis.fr/)
 
-Sienna guide: <https://sienna-platform.github.io/InfrastructureSystems.jl/stable/docs_best_practices/explanation/>
+Sienna best practices:
+- General formatting: <https://sienna-platform.github.io/InfrastructureSystems.jl/stable/docs_best_practices/how-to/general_formatting/>
+- Tutorials: <https://sienna-platform.github.io/InfrastructureSystems.jl/stable/docs_best_practices/how-to/write_a_tutorial/>
+- How-to's: <https://sienna-platform.github.io/InfrastructureSystems.jl/stable/docs_best_practices/how-to/write_a_how-to/>
 
 Docstring requirements:
 
@@ -85,11 +88,14 @@ Docstring requirements:
 - Include: function signatures and arguments list
 - Automation: `DocStringExtensions.TYPEDSIGNATURES` (`TYPEDFIELDS` used sparingly in IS)
 - See also: add links for functions with same name (multiple dispatch)
+- General Do's and Dont's: <https://sienna-platform.github.io/InfrastructureSystems.jl/stable/docs_best_practices/how-to/write_docstrings_org_api/#use_autodocs>
 
 API docs:
 
-- Public: typically in `docs/src/api/public.md` using `@autodocs` with `Public=true, Private=false`
-- Internals: typically in `docs/src/api/internals.md`
+- Public: typically in `docs/src/reference/public.md` (preferred) or `docs/src/api/public.md` (legacy)
+    - Public API is preferrentially organized with `@autodocs` with `Public=true, Private=false`,
+    but `@docs` blocks for custom organization is allowable
+- Internals: typically in `docs/src/reference/internal.md` (preferred) or `docs/src/api/internal.md` (legacy)
 
 ## Design Principles
 
@@ -156,3 +162,25 @@ julia --project=docs docs/make.jl
 **Test failures**
 - Symptom: Tests fail unexpectedly
 - Solution: `julia --project=test -e 'using Pkg; Pkg.instantiate()'`
+
+**Documentation failures**
+- General troubleshooting: ≤https://sienna-platform.github.io/InfrastructureSystems.jl/stable/docs_best_practices/how-to/troubleshoot/#Troubleshoot-Common-Errors>
+
+- Symptom: `makedocs encountered an error` including `:missing_docs`
+- Solution: Determine whether the public API file is formatted using either `@autodocs` or 
+    `@docs` blocks and add missing files or type/method/function references accordingly
+
+- Symptom: `makedocs encountered an error` including `:cross_references`
+- Potential solutions: 
+    - If the referenced function or type is exported, ensure it has a docstring and is
+    mapped to the Public API
+    - Verify reference syntax <https://documenter.juliadocs.org/stable/man/syntax/#at-ref-at-id-links>
+    - If the reference is actually in another package, switch to an `@extref` using `DocumenterInterLinks.jl` and define the package in docs/src/make.jl `InterLinks`
+    if absent
+    - Add explicit `ExternalFallbacks` in docs/src/make.jl for `@ref`s within `@extref`s <https://juliadocs.org/DocumenterInterLinks.jl/stable/fallback/>
+
+- Symptom: `makedocs encountered an error` including `:external_cross_references`
+- Potential solutions:
+    - Add the package containing the external cross reference in docs/src/make.jl `InterLinks` definition if absent
+    - Verify DocumenterInterLinks.jl's standard syntax is applied correctly: <https://juliadocs.org/DocumenterInterLinks.jl/stable/syntax/>
+    - If that fails, find the exact link by searching the inventory: <https://juliadocs.org/DocumenterInterLinks.jl/stable/howtos/#howto-find-extref>
