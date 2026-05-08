@@ -60,11 +60,6 @@ macro includetests(testarg...)
     end
 end
 
-function get_logging_level_from_env(env_name::String, default)
-    level = get(ENV, env_name, default)
-    return IS.get_logging_level(level)
-end
-
 function run_tests()
     logging_config_filename = get(ENV, "SIENNA_LOGGING_CONFIG", nothing)
     if logging_config_filename !== nothing
