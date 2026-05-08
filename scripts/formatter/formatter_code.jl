@@ -1,6 +1,8 @@
 using Pkg
 Pkg.activate(@__DIR__)
 Pkg.instantiate()
+
+
 using JuliaFormatter
 
 main_paths = ["./src", "./test", "./docs/src"]
