@@ -1,5 +1,7 @@
 using Test
-import Logging
+using Logging
+import InfrastructureSystems as IS
+using SiennaTemplate
 
 import Aqua
 Aqua.test_unbound_args(SiennaTemplate)
@@ -56,11 +58,6 @@ macro includetests(testarg...)
             println()
         end
     end
-end
-
-function get_logging_level_from_env(env_name::String, default)
-    level = get(ENV, env_name, default)
-    return IS.get_logging_level(level)
 end
 
 function run_tests()

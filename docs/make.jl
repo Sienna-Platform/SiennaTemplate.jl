@@ -1,10 +1,24 @@
 using Documenter
 import DataStructures: OrderedDict
 using SiennaTemplate
+using DocumenterInterLinks
+
+
+links = InterLinks(
+    # "InfrastructureSystems" => "https://sienna-platform.github.io/InfrastructureSystems.jl/stable/"
+)
+
+# Explicitly defined fallbacks for external docstrings that fail to resolve
+fallbacks = ExternalFallbacks(
+    # "ComponentContainer" => "@extref InfrastructureSystems.ComponentContainer",
+)
+
+include(joinpath(@__DIR__, "make_tutorials.jl"))
+make_tutorials()
 
 pages = OrderedDict(
     "Welcome Page" => "index.md",
-    "Tutorials" => Any["stub" => "tutorials/stub.md"],
+    "Tutorials" => Any["stub" => "tutorials/generated_stub.md"],
     "How to..." => Any["stub" => "how_to_guides/stub.md"],
     "Explanation" => Any["stub" => "explanation/stub.md"],
     "Reference" => Any[ 
@@ -24,6 +38,7 @@ makedocs(
     authors = "Freddy Mercury",
     pages = Any[p for p in pages],
     draft = false,
+    plugins = [links, fallbacks],
 )
 
 deploydocs(
