@@ -19,4 +19,4 @@ Contributions to the development and enhancement of SiennaTemplate is welcome. P
 
 ## License
 
-SiennaTemplate is released under a BSD [license](https://github.com/NREL/SiennaTemplate/blob/main/LICENSE). SiennaTemplate has been developed as part of A PROJECT at the U.S. Department of Energy's National Laboratory of the Rockies (formerly known as NREL) ([NLR](https://www.nrel.gov/))
+SiennaTemplate is released under a BSD [license](https://github.com/Sienna-Platform/SiennaTemplate/blob/main/LICENSE). SiennaTemplate has been developed as part of A PROJECT at the U.S. Department of Energy's National Laboratory of the Rockies (formerly known as NREL) ([NLR](https://www.nrel.gov/))
