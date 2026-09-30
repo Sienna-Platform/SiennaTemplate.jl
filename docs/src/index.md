@@ -30,5 +30,5 @@ programming language.
 
   - [Sienna installation page](https://sienna-platform.github.io/Sienna/SiennaDocs/docs/build/how-to/install/):
     Instructions to install `SiennaTemplate.jl` and other Sienna packages
-  - [Sienna Documentation Hub](https://sienna-platform.github.io/Sienna/SiennaDocs/docs/build/index.html):
-    Links to other Sienna packages' documentation
+  - [Central Sienna documentation](https://sienna-platform.github.io/Sienna/SiennaDocs/docs/build/index.html):
+    Cross-linked documentation website for the core user-facing Sienna packages
